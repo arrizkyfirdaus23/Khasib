@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khasib - Keuangan Hasib</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: #f4f4f5; color: #18181b; padding-bottom: 90px; }
+        
+        header { position: sticky; top: 0; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid #e4e4e7; padding: 14px 16px; z-index: 40; }
+        .header-container { max-width: 480px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo-box { display: flex; align-items: center; gap: 8px; }
+        .logo-icon { width: 32px; height: 32px; background: #18181b; color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+        .badge { font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 20px; }
+        .badge-loading { background: #fef3c7; color: #d97706; }
+        .badge-success { background: #d1fae5; color: #059669; }
+        .badge-error { background: #ffe4e6; color: #e11d48; }
+
+        main { max-width: 480px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+        .tab-pane { display: none; flex-direction: column; gap: 16px; }
+        .tab-pane.active { display: flex; }
+
+        .card { background: white; padding: 16px; border-radius: 20px; border: 1px solid rgba(228, 228, 231, 0.8); box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .card-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-value { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 12px; }
+        .card-footer { display: flex; justify-content: space-between; font-size: 12px; color: #71717a; padding-top: 10px; border-top: 1px solid #f4f4f5; }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        .btn-main { width: 100%; background: #18181b; color: white; border: none; padding: 14px; border-radius: 16px; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; }
+        .btn-main:hover { background: #27272a; }
+
+        .anak-list-wrapper { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e4e4e7; }
+        .anak-item { display: flex; justify-content: space-between; align-items: center; font-size: 12px; padding: 6px 0; border-bottom: 1px solid #fafafa; }
+        .anak-item:last-child { border-bottom: none; }
+
+        .riwayat-box h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #52525b; margin-bottom: 12px; letter-spacing: 0.5px; }
+        .riwayat-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #fafafa; border-radius: 12px; border: 1px solid #f4f4f5; margin-bottom: 8px; }
+        .btn-delete { background: none; border: none; color: #d4d4d8; cursor: pointer; padding: 6px; border-radius: 8px; transition: all 0.2s; }
+        .btn-delete:hover { color: #e11d48; background: #fee2e2; }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-top: 1px solid #e4e4e7; display: flex; justify-content: space-around; padding: 8px 4px; z-index: 40; box-shadow: 0 -4px 12px rgba(0,0,0,0.03); }
+        .nav-item { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10px; font-weight: 600; color: #a1a1aa; cursor: pointer; padding: 6px 10px; border-radius: 12px; transition: all 0.2s; }
+        .nav-item i { font-size: 15px; }
+        .nav-item.active { color: #18181b; background: #f4f4f5; }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(24, 24, 27, 0.5); backdrop-filter: blur(4px); display: none; align-items: flex-end; justify-content: center; z-index: 50; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: white; width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 -10px 25px rgba(0,0,0,0.1); }
+        @media(min-width: 640px) { .modal-box { border-radius: 20px; } .modal-overlay { align-items: center; } }
+        
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; color: #71717a; margin-bottom: 6px; }
+        .form-control { width: 100%; padding: 12px; background: #fafafa; border: 1px solid #e4e4e7; border-radius: 12px; font-size: 13px; outline: none; }
+        .form-control:focus { border-color: #18181b; background: #fff; }
+        
+        .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
+        .btn-cancel { width: 50%; background: #f4f4f5; border: none; padding: 12px; border-radius: 12px; font-weight: 600; font-size: 12px; cursor: pointer; color: #52525b; }
+        .btn-submit { width: 50%; background: #18181b; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 600; font-size: 12px; cursor: pointer; }
+
+        .hidden { display: none !important; }
+        .text-rose { color: #e11d48; }
+        .text-emerald { color: #059669; }
+        .text-amber { color: #d97706; }
+        .text-indigo { color: #4f46e5; }
+        .text-sky { color: #0284c7; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <div class="logo-box">
+                <div class="logo-icon">KH</div>
+                <h1 style="font-size: 14px; font-weight: 700;">Keuangan Hasib</h1>
+            </div>
+            <span id="status-koneksi" class="badge badge-loading">Menghubungkan...</span>
+        </div>
+    </header>
+
+    <main>
+        <section id="tab-dashboard" class="tab-pane active">
+            <div class="card" style="background: linear-gradient(135deg, #18181b, #27272a); color: white; border: none;">
+                <div class="card-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 8px;">
+                    <span class="card-title" style="color: #a1a1aa;">Akumulasi Semua Dana</span>
+                    <i class="fa-solid fa-wallet" style="color: #ffffff; font-size: 14px;"></i>
+                </div>
+                <div class="card-value" id="dash-saldo-total" style="color: white; margin-bottom: 12px;">Rp 0</div>
+                <div class="card-footer" style="border-top: 1px solid rgba(255,255,255,0.1); color: #d4d4d8;">
+                    <span>Total Bank: <strong id="dash-total-bank" style="color: white;">Rp 0</strong></span>
+                    <span>Total Tunai: <strong id="dash-total-tunai" style="color: white;">Rp 0</strong></span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title text-amber">Total Titipan</span>
+                    <i class="fa-solid fa-users text-amber" style="font-size: 14px;"></i>
+                </div>
+                <div class="card-value" id="dash-saldo-titipan">Rp 0</div>
+                <div class="card-footer">
+                    <span>Bank: <strong id="dash-bank-titipan">Rp 0</strong></span>
+                    <span>Tunai: <strong id="dash-tunai-titipan">Rp 0</strong></span>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card" style="padding: 14px;">
+                    <div class="card-header" style="margin-bottom: 6px;">
+                        <span class="card-title text-emerald">Bisnis</span>
+                        <i class="fa-solid fa-store text-emerald" style="font-size: 12px;"></i>
+                    </div>
+                    <div class="card-value" id="dash-saldo-jualan" style="font-size: 18px; margin-bottom: 8px;">Rp 0</div>
+                    <div style="font-size: 11px; color: #71717a; border-top: 1px solid #f4f4f5; padding-top: 6px;">
+                        <div>Bank: <span id="dash-bank-jualan" style="font-weight: 600; color: #27272a;">Rp 0</span></div>
+                        <div>Tunai: <span id="dash-tunai-jualan" style="font-weight: 600; color: #27272a;">Rp 0</span></div>
+                    </div>
+                </div>
+
+                <div class="card" style="padding: 14px;">
+                    <div class="card-header" style="margin-bottom: 6px;">
+                        <span class="card-title text-indigo">Pribadi</span>
+                        <i class="fa-solid fa-user text-indigo" style="font-size: 12px;"></i>
+                    </div>
+                    <div class="card-value" id="dash-saldo-pribadi" style="font-size: 18px; margin-bottom: 8px;">Rp 0</div>
+                    <div style="font-size: 11px; color: #71717a; border-top: 1px solid #f4f4f5; padding-top: 6px;">
+                        <div>Bank: <span id="dash-bank-pribadi" style="font-weight: 600; color: #27272a;">Rp 0</span></div>
+                        <div>Tunai: <span id="dash-tunai-pribadi" style="font-weight: 600; color: #27272a;">Rp 0</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="openModal()" class="btn-main">
+                <i class="fa-solid fa-plus" style="font-size: 12px;"></i>
+                <span>Catat Transaksi Baru</span>
+            </button>
+
+            <div class="card riwayat-box">
+                <h3>Aktivitas Terbaru</h3>
+                <div id="dash-list-transaksi">
+                    <p style="font-size: 12px; color: #a1a1aa; text-align: center; padding: 12px;">Memuat data...</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-bisnis" class="tab-pane">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title text-emerald">Uang Jualan / Bisnis</span>
+                    <i class="fa-solid fa-store text-emerald" style="font-size: 14px;"></i>
+                </div>
+                <div class="card-value" id="bisnis-saldo-total">Rp 0</div>
+                <div class="card-footer">
+                    <span>Bank: <strong id="bisnis-bank">Rp 0</strong></span>
+                    <span>Tunai: <strong id="bisnis-tunai">Rp 0</strong></span>
+                </div>
+            </div>
+            <div class="card riwayat-box">
+                <h3>Mutasi Uang Bisnis</h3>
+                <div id="bisnis-list-transaksi">
+                    <p style="font-size: 12px; color: #a1a1aa; text-align: center; padding: 12px;">Belum ada transaksi bisnis.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-titipan" class="tab-pane">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title text-amber">Titipan Adek Tingkat</span>
+                    <i class="fa-solid fa-users text-amber" style="font-size: 14px;"></i>
+                </div>
+                <div class="card-value" id="titipan-saldo-total">Rp 0</div>
+                <div class="card-footer">
+                    <span>Bank: <strong id="titipan-bank">Rp 0</strong></span>
+                    <span>Tunai: <strong id="titipan-tunai">Rp 0</strong></span>
+                </div>
+                
+                <div class="anak-list-wrapper">
+                    <p style="font-size: 11px; font-weight: 600; color: #a1a1aa; margin-bottom: 6px;">Rincian Saldo Per Anak:</p>
+                    <div id="list-saldo-anak" style="max-height: 180px; overflow-y: auto;">
+                        <span style="font-size: 11px; color: #a1a1aa; font-style: italic;">Memuat data anak...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card riwayat-box">
+                <h3>Mutasi Titipan</h3>
+                <div id="titipan-list-transaksi">
+                    <p style="font-size: 12px; color: #a1a1aa; text-align: center; padding: 12px;">Belum ada transaksi titipan.</p>
+                </div>
+            </div>
+        </section>
+      
+        <section id="tab-pribadi" class="tab-pane">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title text-indigo">Uang Pribadi</span>
+                    <i class="fa-solid fa-user text-indigo" style="font-size: 14px;"></i>
+                </div>
+                <div class="card-value" id="pribadi-saldo-total">Rp 0</div>
+                <div class="card-footer">
+                    <span>Bank: <strong id="pribadi-bank">Rp 0</strong></span>
+                    <span>Tunai: <strong id="pribadi-tunai">Rp 0</strong></span>
+                </div>
+            </div>
+            <div class="card riwayat-box">
+                <h3>Mutasi Uang Pribadi</h3>
+                <div id="pribadi-list-transaksi">
+                    <p style="font-size: 12px; color: #a1a1aa; text-align: center; padding: 12px;">Belum ada transaksi pribadi.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-riwayat" class="tab-pane">
+            <div class="card riwayat-box">
+                <h3>Semua Riwayat & Mutasi</h3>
+                <div id="full-list-transaksi">
+                    <p style="font-size: 12px; color: #a1a1aa; text-align: center; padding: 16px;">Memuat data...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="bottom-nav">
+        <button onclick="switchTab('dashboard', this)" class="nav-item active">
+            <i class="fa-solid fa-house"></i>
+            <span>Dashboard</span>
+        </button>
+        <button onclick="switchTab('bisnis', this)" class="nav-item">
+            <i class="fa-solid fa-store"></i>
+            <span>Bisnis</span>
+        </button>
+        <button onclick="switchTab('titipan', this)" class="nav-item">
+            <i class="fa-solid fa-users"></i>
+            <span>Titipan</span>
+        </button>
+        <button onclick="switchTab('pribadi', this)" class="nav-item">
+            <i class="fa-solid fa-user"></i>
+            <span>Pribadi</span>
+        </button>
+        <button onclick="switchTab('riwayat', this)" class="nav-item">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>Riwayat</span>
+        </button>
+    </nav>
+
+    <div id="modal-transaksi" class="modal-overlay">
+        <div class="modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f4f4f5; padding-bottom: 12px; margin-bottom: 14px;">
+                <h3 style="font-size: 14px; font-weight: 700;">Tambah Transaksi / Mutasi</h3>
+                <button onclick="closeModal()" style="width: 28px; height: 28px; border-radius: 50%; background: #f4f4f5; border: none; cursor: pointer; color: #71717a;"><i class="fa-solid fa-xmark text-xs"></i></button>
+            </div>
+
+            <form id="form-transaksi" onsubmit="simpanTransaksi(event)">
+                <div class="form-group">
+                    <label>Jenis Aktivitas</label>
+                    <select id="tipe" onchange="aturFormMode()" class="form-control">
+                        <option value="in">Pemasukan (Terima Titipan / Saldo Masuk)</option>
+                        <option value="out">Pengeluaran (Penarikan / Belanja)</option>
+                        <option value="transfer">Mutasi / Pencairan (Bank ⇄ Tunai)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Kategori Dana</label>
+                    <select id="kategori" onchange="aturFormMode()" class="form-control">
+                        <option value="titipan">Titipan Adek Tingkat</option>
+                        <option value="jualan">Uang Jualan</option>
+                        <option value="pribadi">Uang Pribadi</option>
+                    </select>
+                </div>
+
+                <div id="wrapper-nama" class="form-group">
+                    <label>Nama Anak / Penitip</label>
+                    <input list="opsiNamaAnak" id="namaAnak" placeholder="Pilih dari daftar atau ketik nama baru..." class="form-control">
+                    <datalist id="opsiNamaAnak">
+                        <!-- Daftar nama akan terisi otomatis dari riwayat transaksi -->
+                    </datalist>
+                </div>
+
+                <div id="wrapper-metode" class="form-group">
+                    <label>Metode Penyimpanan</label>
+                    <select id="metode" class="form-control">
+                        <option value="tunai">Tunai (Cash di dompet)</option>
+                        <option value="bank">Bank / Digital (Transfer/QRIS)</option>
+                    </select>
+                </div>
+
+                <div id="wrapper-transfer" class="form-group hidden">
+                    <label>Arah Mutasi Dana</label>
+                    <select id="arahTransfer" class="form-control">
+                        <option value="bank_ke_tunai">Pencairan (Bank ➔ Tunai Dompet)</option>
+                        <option value="tunai_ke_bank">Setoran (Tunai Dompet ➔ Bank)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Nominal (Rp)</label>
+                    <input type="number" id="nominal" required placeholder="Contoh: 50000" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Keterangan / Catatan</label>
+                    <input type="text" id="keterangan" required placeholder="Contoh: Tarik tunai via ATM" class="form-control">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" onclick="closeModal()" class="btn-cancel">Batal</button>
+                    <button type="submit" id="btn-simpan" class="btn-submit">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAnqMoU1yKRZAy7SXli7vO_jrBsRyWWf64",
+            authDomain: "khasib-63fbc.firebaseapp.com",
+            projectId: "khasib-63fbc",
+            storageBucket: "khasib-63fbc.firebasestorage.app",
+            messagingSenderId: "67025725661",
+            appId: "1:67025725661:web:882beb184a611232ab9334"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.formatRupiah = function(angka) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(angka);
+        }
+
+        window.switchTab = function(tabId, btnElement) {
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+
+            document.getElementById('tab-' + tabId).classList.add('active');
+            btnElement.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.openModal = function() {
+            document.getElementById('modal-transaksi').classList.add('active');
+            aturFormMode();
+        }
+
+        window.closeModal = function() {
+            document.getElementById('modal-transaksi').classList.remove('active');
+            document.getElementById('form-transaksi').reset();
+        }
+
+        window.aturFormMode = function() {
+            const tipe = document.getElementById('tipe').value;
+            const kategori = document.getElementById('kategori').value;
+            const wrapperNama = document.getElementById('wrapper-nama');
+            const wrapperMetode = document.getElementById('wrapper-metode');
+            const wrapperTransfer = document.getElementById('wrapper-transfer');
+
+            if (kategori === 'titipan' && tipe !== 'transfer') {
+                wrapperNama.classList.remove('hidden');
+                document.getElementById('namaAnak').required = true;
+            } else {
+                wrapperNama.classList.add('hidden');
+                document.getElementById('namaAnak').required = false;
+            }
+
+            if (tipe === 'transfer') {
+                wrapperMetode.classList.add('hidden');
+                wrapperTransfer.classList.remove('hidden');
+                wrapperNama.classList.add('hidden');
+            } else {
+                wrapperMetode.classList.remove('hidden');
+                wrapperTransfer.classList.add('hidden');
+            }
+        }
+
+        window.simpanTransaksi = async function(e) {
+            e.preventDefault();
+            const btnSimpan = document.getElementById('btn-simpan');
+            btnSimpan.innerText = "Menyimpan...";
+            btnSimpan.disabled = true;
+
+            const tipe = document.getElementById('tipe').value;
+            const kategori = document.getElementById('kategori').value;
+            const nominal = parseFloat(document.getElementById('nominal').value);
+            const keterangan = document.getElementById('keterangan').value;
+            const namaAnak = (kategori === 'titipan' && tipe !== 'transfer') ? document.getElementById('namaAnak').value.trim() : "";
+            const metode = document.getElementById('metode').value;
+            const arahTransfer = document.getElementById('arahTransfer').value;
+
+            try {
+                await addDoc(collection(db, "transactions"), {
+                    tipe,
+                    kategori,
+                    nominal,
+                    keterangan,
+                    namaAnak,
+                    metode: tipe === 'transfer' ? 'transfer' : metode,
+                    arahTransfer: tipe === 'transfer' ? arahTransfer : '',
+                    createdAt: serverTimestamp()
+                });
+                closeModal();
+            } catch (error) {
+                alert("Gagal menyimpan transaksi: " + error.message);
+                console.error(error);
+            } finally {
+                btnSimpan.innerText = "Simpan";
+                btnSimpan.disabled = false;
+            }
+        }
+
+        window.hapusTransaksi = async function(id) {
+            if (confirm("Yakin ingin menghapus transaksi ini? Saldo akan disesuaikan kembali.")) {
+                try {
+                    await deleteDoc(doc(db, "transactions", id));
+                } catch (error) {
+                    alert("Gagal menghapus transaksi: " + error.message);
+                    console.error(error);
+                }
+            }
+        }
+
+        const q = query(collection(db, "transactions"), orderBy("createdAt", "desc"));
+        onSnapshot(q, (snapshot) => {
+            let transaksiList = [];
+            snapshot.forEach((doc) => {
+                transaksiList.push({ id: doc.id, ...doc.data() });
+            });
+
+            const badge = document.getElementById('status-koneksi');
+            badge.innerText = "Connected";
+            badge.className = "badge badge-success";
+
+            hitungDanRender(transaksiList);
+        }, (error) => {
+            console.error("Koneksi gagal:", error);
+            const badge = document.getElementById('status-koneksi');
+            badge.innerText = "Error Koneksi";
+            badge.className = "badge badge-error";
+        });
+
+        function renderListHtml(dataArray) {
+            if (dataArray.length === 0) {
+                return `<p style="font-size: 12px; color: #a1a1aa; text-align: center; padding: 12px;">Belum ada riwayat tercatat.</p>`;
+            }
+
+            let html = '';
+            dataArray.forEach(t => {
+                let sign = '';
+                let textColor = '#27272a';
+                let infoMetode = '';
+                let subInfo = t.namaAnak ? `(${t.namaAnak})` : '';
+
+                if (t.tipe === 'in') {
+                    sign = '+';
+                    textColor = '#059669';
+                    infoMetode = `Masuk via ${t.metode.toUpperCase()}`;
+                } else if (t.tipe === 'out') {
+                    sign = '-';
+                    textColor = '#e11d48';
+                    infoMetode = `Keluar dari ${t.metode.toUpperCase()}`;
+                } else if (t.tipe === 'transfer') {
+                    sign = '⇄';
+                    textColor = '#0284c7';
+                    let arahTeks = t.arahTransfer === 'bank_ke_tunai' ? 'Bank ➔ Tunai' : 'Tunai ➔ Bank';
+                    infoMetode = `Mutasi: ${arahTeks}`;
+                }
+
+                let waktuFormatted = t.createdAt && t.createdAt.toDate ? t.createdAt.toDate().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Baru saja';
+
+                html += `
+                    <div class="riwayat-item">
+                        <div style="flex: 1; padding-right: 8px;">
+                            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
+                                <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: #71717a;">${t.kategori}</span>
+                                <span style="color: #d4d4d8;">•</span>
+                                <span style="font-size: 10px; color: #71717a;">${infoMetode}</span>
+                            </div>
+                            <p style="font-size: 12px; font-weight: 600; color: #27272a;">${t.keterangan} <span style="font-weight: 500; color: #71717a;">${subInfo}</span></p>
+                            <span style="font-size: 10px; color: #a1a1aa;">${waktuFormatted}</span>
+                        </div>
+                        <div style="text-align: right; display: flex; align-items: center; gap: 8px;">
+                            <div>
+                                <span style="font-size: 12px; font-weight: 700; color: ${textColor}; display: block;">${sign} ${formatRupiah(t.nominal)}</span>
+                            </div>
+                            <button onclick="hapusTransaksi('${t.id}')" class="btn-delete" title="Hapus transaksi">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            return html;
+        }
+
+        function hitungDanRender(data) {
+            let saldo = {
+                titipan: { bank: 0, tunai: 0 },
+                jualan: { bank: 0, tunai: 0 },
+                pribadi: { bank: 0, tunai: 0 }
+            };
+
+            let saldoPerAnak = {};
+            let daftarNamaUnik = new Set();
+            let dataKronologis = [...data].reverse();
+
+            dataKronologis.forEach(t => {
+                let kat = t.kategori;
+                let nominal = parseFloat(t.nominal) || 0;
+
+                if (t.namaAnak && t.namaAnak.trim() !== '') {
+                    daftarNamaUnik.add(t.namaAnak.trim());
+                }
+
+                if (t.tipe === 'in') {
+                    if (t.metode === 'bank') saldo[kat].bank += nominal;
+                    else saldo[kat].tunai += nominal;
+
+                    if (kat === 'titipan' && t.namaAnak) {
+                        let nama = t.namaAnak.toUpperCase();
+                        if (!saldoPerAnak[nama]) saldoPerAnak[nama] = 0;
+                        saldoPerAnak[nama] += nominal;
+                    }
+                } else if (t.tipe === 'out') {
+                    if (t.metode === 'bank') saldo[kat].bank -= nominal;
+                    else saldo[kat].tunai -= nominal;
+
+                    if (kat === 'titipan' && t.namaAnak) {
+                        let nama = t.namaAnak.toUpperCase();
+                        if (!saldoPerAnak[nama]) saldoPerAnak[nama] = 0;
+                        saldoPerAnak[nama] -= nominal;
+                    }
+                } else if (t.tipe === 'transfer') {
+                    if (t.arahTransfer === 'bank_ke_tunai') {
+                        saldo[kat].bank -= nominal;
+                        saldo[kat].tunai += nominal;
+                    } else if (t.arahTransfer === 'tunai_ke_bank') {
+                        saldo[kat].tunai -= nominal;
+                        saldo[kat].bank += nominal;
+                    }
+                }
+            });
+
+            let datalistHtml = '';
+            daftarNamaUnik.forEach(nama => {
+                datalistHtml += `<option value="${nama}">`;
+            });
+            document.getElementById('opsiNamaAnak').innerHTML = datalistHtml;
+
+            let totalBankSemua = saldo.titipan.bank + saldo.jualan.bank + saldo.pribadi.bank;
+            let totalTunaiSemua = saldo.titipan.tunai + saldo.jualan.tunai + saldo.pribadi.tunai;
+            let grandTotalSemua = totalBankSemua + totalTunaiSemua;
+
+            document.getElementById('dash-saldo-total').innerText = formatRupiah(grandTotalSemua);
+            document.getElementById('dash-total-bank').innerText = formatRupiah(totalBankSemua);
+            document.getElementById('dash-total-tunai').innerText = formatRupiah(totalTunaiSemua);
+
+            document.getElementById('dash-saldo-titipan').innerText = formatRupiah(saldo.titipan.bank + saldo.titipan.tunai);
+            document.getElementById('dash-bank-titipan').innerText = formatRupiah(saldo.titipan.bank);
+            document.getElementById('dash-tunai-titipan').innerText = formatRupiah(saldo.titipan.tunai);
+
+            document.getElementById('dash-saldo-jualan').innerText = formatRupiah(saldo.jualan.bank + saldo.jualan.tunai);
+            document.getElementById('dash-bank-jualan').innerText = formatRupiah(saldo.jualan.bank);
+            document.getElementById('dash-tunai-jualan').innerText = formatRupiah(saldo.jualan.tunai);
+
+            document.getElementById('dash-saldo-pribadi').innerText = formatRupiah(saldo.pribadi.bank + saldo.pribadi.tunai);
+            document.getElementById('dash-bank-pribadi').innerText = formatRupiah(saldo.pribadi.bank);
+            document.getElementById('dash-tunai-pribadi').innerText = formatRupiah(saldo.pribadi.tunai);
+
+            document.getElementById('bisnis-saldo-total').innerText = formatRupiah(saldo.jualan.bank + saldo.jualan.tunai);
+            document.getElementById('bisnis-bank').innerText = formatRupiah(saldo.jualan.bank);
+            document.getElementById('bisnis-tunai').innerText = formatRupiah(saldo.jualan.tunai);
+
+            document.getElementById('titipan-saldo-total').innerText = formatRupiah(saldo.titipan.bank + saldo.titipan.tunai);
+            document.getElementById('titipan-bank').innerText = formatRupiah(saldo.titipan.bank);
+            document.getElementById('titipan-tunai').innerText = formatRupiah(saldo.titipan.tunai);
+
+            document.getElementById('pribadi-saldo-total').innerText = formatRupiah(saldo.pribadi.bank + saldo.pribadi.tunai);
+            document.getElementById('pribadi-bank').innerText = formatRupiah(saldo.pribadi.bank);
+            document.getElementById('pribadi-tunai').innerText = formatRupiah(saldo.pribadi.tunai);
+
+            const listAnakContainer = document.getElementById('list-saldo-anak');
+            let keysAnak = Object.keys(saldoPerAnak);
+            if (keysAnak.length === 0) {
+                listAnakContainer.innerHTML = `<span style="font-size: 11px; color: #a1a1aa; font-style: italic;">Belum ada data titipan anak.</span>`;
+            } else {
+                let htmlAnak = '';
+                keysAnak.forEach(nama => {
+                    let s = saldoPerAnak[nama];
+                    let warnaSaldo = s < 0 ? '#e11d48' : '#27272a';
+                    htmlAnak += `
+                        <div class="anak-item">
+                            <span style="font-weight: 500; color: #3f3f46;">${nama}</span>
+                            <span style="font-weight: 700; color: ${warnaSaldo};">${formatRupiah(s)}</span>
+                        </div>
+                    `;
+                });
+                listAnakContainer.innerHTML = htmlAnak;
+            }
+
+            document.getElementById('dash-list-transaksi').innerHTML = renderListHtml(data.slice(0, 5));
+            document.getElementById('bisnis-list-transaksi').innerHTML = renderListHtml(data.filter(t => t.kategori === 'jualan'));
+            document.getElementById('titipan-list-transaksi').innerHTML = renderListHtml(data.filter(t => t.kategori === 'titipan'));
+            document.getElementById('pribadi-list-transaksi').innerHTML = renderListHtml(data.filter(t => t.kategori === 'pribadi'));
+            document.getElementById('full-list-transaksi').innerHTML = renderListHtml(data);
+        }
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Khasib - Keuangan Hasib</title>
+    <title>Khasib - Keuangan Khasib</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -86,19 +86,19 @@
         <section id="tab-dashboard" class="tab-pane active">
             <div class="card" style="background: linear-gradient(135deg, #18181b, #27272a); color: white; border: none;">
                 <div class="card-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 8px;">
-                    <span class="card-title" style="color: #a1a1aa;">Akumulasi Semua Dana</span>
+                    <span class="card-title" style="color: #a1a1aa;">Akumulasi Saldo</span>
                     <i class="fa-solid fa-wallet" style="color: #ffffff; font-size: 14px;"></i>
                 </div>
                 <div class="card-value" id="dash-saldo-total" style="color: white; margin-bottom: 12px;">Rp 0</div>
                 <div class="card-footer" style="border-top: 1px solid rgba(255,255,255,0.1); color: #d4d4d8;">
-                    <span>Total Bank: <strong id="dash-total-bank" style="color: white;">Rp 0</strong></span>
-                    <span>Total Tunai: <strong id="dash-total-tunai" style="color: white;">Rp 0</strong></span>
+                    <span>Saldo Bank: <strong id="dash-total-bank" style="color: white;">Rp 0</strong></span>
+                    <span>Saldo Tunai: <strong id="dash-total-tunai" style="color: white;">Rp 0</strong></span>
                 </div>
             </div>
 
             <div class="card">
                 <div class="card-header">
-                    <span class="card-title text-amber">Total Titipan</span>
+                    <span class="card-title text-amber">Saldo Titipan</span>
                     <i class="fa-solid fa-users text-amber" style="font-size: 14px;"></i>
                 </div>
                 <div class="card-value" id="dash-saldo-titipan">Rp 0</div>
@@ -150,7 +150,7 @@
         <section id="tab-bisnis" class="tab-pane">
             <div class="card">
                 <div class="card-header">
-                    <span class="card-title text-emerald">Uang Jualan / Bisnis</span>
+                    <span class="card-title text-emerald">Saldo Bisnis</span>
                     <i class="fa-solid fa-store text-emerald" style="font-size: 14px;"></i>
                 </div>
                 <div class="card-value" id="bisnis-saldo-total">Rp 0</div>
@@ -160,7 +160,7 @@
                 </div>
             </div>
             <div class="card riwayat-box">
-                <h3>Mutasi Uang Bisnis</h3>
+                <h3>Mutasi Saldo Bisnis</h3>
                 <div id="bisnis-list-transaksi">
                     <p style="font-size: 12px; color: #a1a1aa; text-align: center; padding: 12px;">Belum ada transaksi bisnis.</p>
                 </div>
@@ -170,7 +170,7 @@
         <section id="tab-titipan" class="tab-pane">
             <div class="card">
                 <div class="card-header">
-                    <span class="card-title text-amber">Titipan Adek Tingkat</span>
+                    <span class="card-title text-amber">Saldo Titipan</span>
                     <i class="fa-solid fa-users text-amber" style="font-size: 14px;"></i>
                 </div>
                 <div class="card-value" id="titipan-saldo-total">Rp 0</div>
@@ -187,7 +187,7 @@
                 </div>
             </div>
             <div class="card riwayat-box">
-                <h3>Mutasi Titipan</h3>
+                <h3>Mutasi Saldo Titipan</h3>
                 <div id="titipan-list-transaksi">
                     <p style="font-size: 12px; color: #a1a1aa; text-align: center; padding: 12px;">Belum ada transaksi titipan.</p>
                 </div>
@@ -197,7 +197,7 @@
         <section id="tab-pribadi" class="tab-pane">
             <div class="card">
                 <div class="card-header">
-                    <span class="card-title text-indigo">Uang Pribadi</span>
+                    <span class="card-title text-indigo">Saldo Pribadi</span>
                     <i class="fa-solid fa-user text-indigo" style="font-size: 14px;"></i>
                 </div>
                 <div class="card-value" id="pribadi-saldo-total">Rp 0</div>
@@ -207,7 +207,7 @@
                 </div>
             </div>
             <div class="card riwayat-box">
-                <h3>Mutasi Uang Pribadi</h3>
+                <h3>Mutasi Saldo Pribadi</h3>
                 <div id="pribadi-list-transaksi">
                     <p style="font-size: 12px; color: #a1a1aa; text-align: center; padding: 12px;">Belum ada transaksi pribadi.</p>
                 </div>
@@ -216,7 +216,7 @@
 
         <section id="tab-riwayat" class="tab-pane">
             <div class="card riwayat-box">
-                <h3>Semua Riwayat & Mutasi</h3>
+                <h3>Semua Riwayat Mutasi</h3>
                 <div id="full-list-transaksi">
                     <p style="font-size: 12px; color: #a1a1aa; text-align: center; padding: 16px;">Memuat data...</p>
                 </div>
@@ -258,8 +258,8 @@
                 <div class="form-group">
                     <label>Jenis Aktivitas</label>
                     <select id="tipe" onchange="aturFormMode()" class="form-control">
-                        <option value="in">Pemasukan (Terima Titipan / Saldo Masuk)</option>
-                        <option value="out">Pengeluaran (Penarikan / Belanja)</option>
+                        <option value="in">Pemasukan</option>
+                        <option value="out">Pengeluaran</option>
                         <option value="transfer">Mutasi / Pencairan (Bank ⇄ Tunai)</option>
                     </select>
                 </div>
@@ -267,33 +267,32 @@
                 <div class="form-group">
                     <label>Kategori Dana</label>
                     <select id="kategori" onchange="aturFormMode()" class="form-control">
-                        <option value="titipan">Titipan Adek Tingkat</option>
-                        <option value="jualan">Uang Jualan</option>
-                        <option value="pribadi">Uang Pribadi</option>
+                        <option value="titipan">Titipan</option>
+                        <option value="jualan">Bisnis</option>
+                        <option value="pribadi">Pribadi</option>
                     </select>
                 </div>
 
                 <div id="wrapper-nama" class="form-group">
-                    <label>Nama Anak / Penitip</label>
+                    <label>Nama Penitip</label>
                     <input list="opsiNamaAnak" id="namaAnak" placeholder="Pilih dari daftar atau ketik nama baru..." class="form-control">
                     <datalist id="opsiNamaAnak">
-                        <!-- Daftar nama akan terisi otomatis dari riwayat transaksi -->
                     </datalist>
                 </div>
 
                 <div id="wrapper-metode" class="form-group">
                     <label>Metode Penyimpanan</label>
                     <select id="metode" class="form-control">
-                        <option value="tunai">Tunai (Cash di dompet)</option>
-                        <option value="bank">Bank / Digital (Transfer/QRIS)</option>
+                        <option value="tunai">Tunai</option>
+                        <option value="bank">Bank / Digital</option>
                     </select>
                 </div>
 
                 <div id="wrapper-transfer" class="form-group hidden">
                     <label>Arah Mutasi Dana</label>
                     <select id="arahTransfer" class="form-control">
-                        <option value="bank_ke_tunai">Pencairan (Bank ➔ Tunai Dompet)</option>
-                        <option value="tunai_ke_bank">Setoran (Tunai Dompet ➔ Bank)</option>
+                        <option value="bank_ke_tunai">Pencairan (Bank ➔ Tunai)</option>
+                        <option value="tunai_ke_bank">Setoran (Tunai ➔ Bank)</option>
                     </select>
                 </div>
 
